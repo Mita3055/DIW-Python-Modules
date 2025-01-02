@@ -31,7 +31,7 @@ This project provides a Python-based G-code generator tailored for a Direct Ink 
 ### Changing the Output File Location
 To specify where the generated G-code files will be saved:
 1. Open `main.py`.
-2. Locate the `save_directory` variable:
+2. Locate the `save_directory` variable (line 11):
    ```python
    save_directory = r"C:\Users\dmele\Desktop\Beidaghi Lab\DIW\G-Code Generator 11-21\Gcode Output"
    ```

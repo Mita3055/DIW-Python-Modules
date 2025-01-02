@@ -27,7 +27,7 @@ with open(file_path, 'w') as f:
     
     output.extend(singleLineCap(cap, prnt, 50, 35))
 
-
+    output.extend(sidewaysCapacitor(cap, prnt, 90, 90))
     #writing output into the file
     for line in output:
         f.write(line + '\n')

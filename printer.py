@@ -286,7 +286,7 @@ def contactPatch(cap, prnt, xStart, yStart):
     return output
 
 
-def singleLineCap(cap, prnt, xStart, yStart):
+def singleLineCap(cap, prnt, layers, layer_height, xStart, yStart):
     output = ["",
               "",
               ";Printing Capasitor (single Line)",
@@ -319,4 +319,69 @@ def singleLineCap(cap, prnt, xStart, yStart):
         output.extend(movePrintHead(cap.arm_len, -cap.arm_gap, -2, prnt))
 
     output.extend(moveZ(10, prnt))
+
+    if layers == 1:
+        return output
+    
+    else:
+        for layer in range(1, layers, 1):
+            output.extend(absolute())
+            output.extend(movePrintHead(xStart, yStart + cap.stem_len + (cap.arm_count-1)*cap.arm_gap, 10, prnt))
+            output.extend(moveZ(prnt.print_height + layer_height * (layer + 1), prnt))
+            output.extend(relative())
+
+            for arm in range (0, cap.arm_count, 1):
+                output.extend(printX(cap.arm_len, prnt))
+                output.extend(moveZ(2, prnt))
+                output.extend(movePrintHead(-cap.arm_len, -cap.arm_gap, -2, prnt))    
+            
+            output.extend(absolute())
+            output.extend(movePrintHead(xStart + cap.arm_len + cap.arm_gap, yStart + cap.stem_len + (cap.arm_count-1)*cap.arm_gap, 10, prnt))
+            output.extend(moveZ(prnt.print_height + layer_height * (layer + 1), prnt))
+            output.extend(relative())
+
+            for arm in range (0, cap.arm_count, 1):
+                output.extend(printX(-cap.arm_len, prnt))
+                output.extend(moveZ(2, prnt))
+                output.extend(movePrintHead(cap.arm_len, -cap.arm_gap, -2, prnt))
+        return output
+
+            
+
+            
+def sidewaysCapacitor(cap, prnt, xStart, yStart, layers, layer_height):
+    output = ["",
+                "",
+                ";Printing Capacitor (sideways)",
+                f";\txStart : {xStart}",
+                f";\tyStart : {yStart}"]
+
+    # Moving to Start 
+    output.extend(absolute())
+    output.extend(movePrintHead(xStart, yStart, 10, prnt))
+    output.extend(moveZ(prnt.print_height, prnt))
+    output.extend(relative())
+
+    # Bottom Side
+    output.extend(printX(cap.stem_len + (cap.arm_count-1)*cap.arm_gap, prnt))
+
+    for arm in range(cap.arm_count):
+        output.extend(printY(cap.arm_len, prnt))
+        output.extend(moveZ(2, prnt))
+        output.extend(movePrintHead(-cap.arm_gap, -cap.arm_len, -2, prnt))
+
+    output.extend(moveZ(10, prnt))
+    output.extend(absolute())
+    output.extend(movePrintHead(xStart, yStart + cap.arm_len + cap.arm_gap, prnt.print_height, prnt))
+    output.extend(relative())
+    output.extend(printX(cap.stem_len + (cap.arm_count-1/2)*cap.arm_gap, prnt))
+
+    for arm in range(cap.arm_count):
+        output.extend(printY(-cap.arm_len, prnt))
+        output.extend(moveZ(2, prnt))
+        output.extend(movePrintHead(-cap.arm_gap, cap.arm_len, -2, prnt))
+
+    output.extend(moveZ(10, prnt))
     return output
+
+
