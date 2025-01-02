@@ -22,12 +22,10 @@ with open(file_path, 'w') as f:
     output.extend(gcodeStart(cap, prnt, fileName))
 
     output.extend(printPrimeLine(3, 20, 30, prnt))
-    
-    output.extend(printCap(cap, prnt, 25, 35))
-    
-    output.extend(singleLineCap(cap, prnt, 50, 35))
-
-    output.extend(sidewaysCapacitor(cap, prnt, 90, 90))
+        
+    output.extend(singleLineCap(cap, prnt, 5, 1, 30, xStart=25, yStart=35))
+    output.extend(singleLineCap_left(cap, prnt, 5, 1, 30, xStart=50, yStart=35))
+    output.extend(singleLineCap_right(cap, prnt, 5, 1, 30, xStart=50, yStart=35))
     #writing output into the file
     for line in output:
         f.write(line + '\n')

@@ -130,7 +130,11 @@ def relative():
 
 def home():
     output = ["G28"]
+    return output
 
+def pause(delay):
+    output = [f"G4 S{delay}"]
+    return output
 
 
 def print_circle(radius, x_center, y_center, segments, prnt):
@@ -286,7 +290,7 @@ def contactPatch(cap, prnt, xStart, yStart):
     return output
 
 
-def singleLineCap(cap, prnt, layers, layer_height, xStart, yStart):
+def singleLineCap(cap, prnt, layers, layer_height, delay, xStart, yStart):
     output = ["",
               "",
               ";Printing Capasitor (single Line)",
@@ -325,6 +329,7 @@ def singleLineCap(cap, prnt, layers, layer_height, xStart, yStart):
     
     else:
         for layer in range(1, layers, 1):
+            output.extend(pause(delay))
             output.extend(absolute())
             output.extend(movePrintHead(xStart, yStart + cap.stem_len + (cap.arm_count-1)*cap.arm_gap, 10, prnt))
             output.extend(moveZ(prnt.print_height + layer_height * (layer + 1), prnt))
@@ -336,7 +341,7 @@ def singleLineCap(cap, prnt, layers, layer_height, xStart, yStart):
                 output.extend(movePrintHead(-cap.arm_len, -cap.arm_gap, -2, prnt))    
             
             output.extend(absolute())
-            output.extend(movePrintHead(xStart + cap.arm_len + cap.arm_gap, yStart + cap.stem_len + (cap.arm_count-1)*cap.arm_gap, 10, prnt))
+            output.extend(movePrintHead(xStart + cap.arm_len + cap.arm_gap, yStart + cap.stem_len + (cap.arm_count-1/2)*cap.arm_gap, 10, prnt))
             output.extend(moveZ(prnt.print_height + layer_height * (layer + 1), prnt))
             output.extend(relative())
 
@@ -349,7 +354,7 @@ def singleLineCap(cap, prnt, layers, layer_height, xStart, yStart):
             
 
             
-def sidewaysCapacitor(cap, prnt, xStart, yStart, layers, layer_height):
+def sidewaysCapacitor(cap, prnt, xStart, yStart):
     output = ["",
                 "",
                 ";Printing Capacitor (sideways)",
@@ -385,3 +390,83 @@ def sidewaysCapacitor(cap, prnt, xStart, yStart, layers, layer_height):
     return output
 
 
+def singleLineCap_left(cap, prnt, layers, layer_height, delay, xStart, yStart):
+    output = ["",
+              "",
+              ";Printing Capasitor (single Line - left)",
+              f";\txStart : {xStart}",
+              f";\tyStart : {yStart}"]
+    
+    #Moving to Start 
+    output.extend(absolute())
+    output.extend(movePrintHead(xStart, yStart, 10, prnt))
+    output.extend(moveZ(prnt.print_height, prnt))
+    output.extend(relative())
+    
+    #Left Side
+    output.extend(printY(cap.stem_len + (cap.arm_count-1)*cap.arm_gap, prnt))
+
+    for arm in range (0, cap.arm_count, 1):
+        output.extend(printX(cap.arm_len, prnt))
+        output.extend(moveZ(2, prnt))
+        output.extend(movePrintHead(-cap.arm_len, -cap.arm_gap, -2, prnt))
+
+    output.extend(moveZ(10, prnt))
+
+    if layers == 1:
+        return output
+    
+    else:
+        for layer in range(1, layers, 1):
+            output.extend(pause(delay))
+            output.extend(absolute())
+            output.extend(movePrintHead(xStart, yStart + cap.stem_len + (cap.arm_count-1)*cap.arm_gap, 10, prnt))
+            output.extend(moveZ(prnt.print_height + layer_height * (layer + 1), prnt))
+            output.extend(relative())
+
+            for arm in range (0, cap.arm_count, 1):
+                output.extend(printX(cap.arm_len, prnt))
+                output.extend(moveZ(2, prnt))
+                output.extend(movePrintHead(-cap.arm_len, -cap.arm_gap, -2, prnt))    
+        
+        output.extend(moveZ(10, prnt))
+        return output
+
+def singleLineCap_right(cap, prnt, layers, layer_height, delay, xStart, yStart):
+    output = ["",
+              "",
+              ";Printing Capasitor (single Line - right)",
+              f";\txStart : {xStart}",
+              f";\tyStart : {yStart}"]
+    
+    #Moving to Start 
+    output.extend(absolute())
+    output.extend(movePrintHead(xStart + cap.arm_len + cap.arm_gap, yStart, 10, prnt))
+    output.extend(moveZ(prnt.print_height, prnt))
+    output.extend(relative())
+
+    output.extend(printY(cap.stem_len + (cap.arm_count-1/2)*cap.arm_gap, prnt))
+
+    for arm in range (0, cap.arm_count, 1):
+        output.extend(printX(-cap.arm_len, prnt))
+        output.extend(moveZ(2, prnt))
+        output.extend(movePrintHead(cap.arm_len, -cap.arm_gap, -2, prnt))
+
+    output.extend(moveZ(10, prnt))
+
+    if layers == 1:
+        return output
+    
+    else:
+        for layer in range(1, layers, 1):
+            output.extend(pause(delay))
+            output.extend(absolute())    
+            output.extend(movePrintHead(xStart + cap.arm_len + cap.arm_gap, yStart + cap.stem_len + (cap.arm_count-1/2)*cap.arm_gap, 10, prnt))
+            output.extend(moveZ(prnt.print_height + layer_height * (layer + 1), prnt))
+            output.extend(relative())
+
+            for arm in range (0, cap.arm_count, 1):
+                output.extend(printX(-cap.arm_len, prnt))
+                output.extend(moveZ(2, prnt))
+                output.extend(movePrintHead(cap.arm_len, -cap.arm_gap, -2, prnt))
+        return output

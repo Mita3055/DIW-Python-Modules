@@ -72,7 +72,8 @@ Below is a summary of critical functions in `printer.py`:
    - Generates commands to print a circular path, useful for rounded capacitor designs or tests.
 
 6. **`singleLineCap(cap, prnt, xStart, yStart)`**:
-   - Creates a single-line version of a capacitor for faster prints.
+   - Creates a single-line version of a capacitor.
+   - Update 1/2/2025: Now includes layering functionality with an optional delay between layers. 
 
 7. **`sidewaysCapacitor(cap, prnt, xStart, yStart)`**:
    - Produces a rotated capacitor layout, enabling side-by-side printing.
