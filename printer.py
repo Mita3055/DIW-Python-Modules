@@ -510,3 +510,56 @@ def singleLineCap_right(cap, prnt, layers, layer_height, delay, xStart, yStart):
                 output.extend(moveZ(2, prnt))
                 output.extend(movePrintHead(cap.arm_len, -cap.arm_gap, -2, prnt))
         return output
+    
+
+def square_wave(start_x, start_y, height, width, iterations, prnt):
+    output = ["",
+                "",
+                ";Printing Square Wave",
+                f";\tstart_x : {start_x}",
+                f";\tstart_y : {start_y}",
+                f";\theight : {height}",
+                f";\twidth : {width}",
+                f";\titerations : {iterations}"]
+
+    output.extend(absolute())
+    output.extend(movePrintHead(start_x, start_y, prnt.print_height, prnt))
+    output.extend(relative())
+
+    for i in range(iterations):
+        output.extend(printY(height, prnt))
+        output.extend(printX(width, prnt))
+        output.extend(printY(-height, prnt))
+        output.extend(printX(width, prnt))
+
+    output.extend(moveZ(10, prnt))
+    return output
+
+def contracting_square_wave(start_x, start_y, height, width, iterations, shrink_rate, prnt):
+    output = ["",
+                "",
+                ";Printing Contracting Square Wave",
+                f";\tstart_x : {start_x}",
+                f";\tstart_y : {start_y}",
+                f";\theight : {height}",
+                f";\twidth : {width}",
+                f";\titerations : {iterations}",
+                f";\tshrink_rate : {shrink_rate}"]
+
+    output.extend(absolute())
+    output.extend(movePrintHead(start_x, start_y, prnt.print_height, prnt))
+    output.extend(relative())
+
+    current_width = width
+    
+    for i in range(iterations):
+        output.extend(printY(height, prnt))
+        output.extend(printX(current_width, prnt))
+        current_width = current_width * shrink_rate
+
+        output.extend(printY(-height, prnt))
+        output.extend(printX(current_width, prnt))
+        current_width = current_width * shrink_rate
+
+    output.extend(moveZ(10, prnt))
+    return output
