@@ -551,7 +551,7 @@ def contracting_square_wave(start_x, start_y, height, width, iterations, shrink_
     output.extend(relative())
 
     current_width = width
-    
+
     for i in range(iterations):
         output.extend(printY(height, prnt))
         output.extend(printX(current_width, prnt))
@@ -560,6 +560,35 @@ def contracting_square_wave(start_x, start_y, height, width, iterations, shrink_
         output.extend(printY(-height, prnt))
         output.extend(printX(current_width, prnt))
         current_width = current_width * shrink_rate
+
+    output.extend(moveZ(10, prnt))
+    return output
+
+
+def lattice(horizontal_lines, vertical_lines, vertical_spacing, horizontal_spacing, start_x, start_y, prnt):
+    output = ["",
+                "",
+                ";Printing Lattice/Grid",
+                f";\tstart_x : {start_x}",
+                f";\tstart_y : {start_y}",
+                f";\thorizontal_lines : {horizontal_lines}",
+                f";\tvertical_lines : {vertical_lines}",
+                f";\tvertical_spacing : {vertical_spacing}",
+                f";\thorizontal_spacing : {horizontal_spacing}"]
+
+    output.extend(absolute())
+    output.extend(movePrintHead(start_x, start_y, prnt.print_height, prnt))
+    output.extend(relative())
+
+    # Print horizontal lines
+    for i in range(horizontal_lines):
+        output.extend(printX(vertical_lines * horizontal_spacing, prnt))
+        output.extend(movePrintHead(start_x, start_y + (i + 1) * vertical_spacing, prnt.print_height, prnt))
+
+    # Print vertical lines
+    for j in range(vertical_lines):
+        output.extend(printY(horizontal_lines * vertical_spacing, prnt))
+        output.extend(movePrintHead(start_x + (j + 1) * horizontal_spacing, start_y, prnt.print_height, prnt))
 
     output.extend(moveZ(10, prnt))
     return output
