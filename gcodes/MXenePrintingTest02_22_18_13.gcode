@@ -1,0 +1,90 @@
+; Beidaghi Lab - Capacitor File : <function fileName at 0x7ffedc2f0f40>
+; Printer Profile: MXeneInkPrintProfile
+	;Extrusion: 0.015
+	;Feed Rate: 1500
+	;Movement Speed: 5000
+	;Print Height: 0.9
+	;Bed Height: 0.9
+	;Line Gap: 0.1
+; Capacitor Profile: stdCap
+	;Stem Length: 10
+	;Arm Length: 10
+	;Arm Count: 4
+	;Gap: 3
+	;Arm Gap: 4
+	;Contact Patch Width: 5
+;Start G-Code
+
+
+;BED_MESH_PROFILE LOAD=default
+G21 ; Set units to millimeters
+M104 S0
+M140 S0
+G28; Homing Printer
+G90;
+G92 E0 ; Reset extruder position
+
+
+;Printing Priming Line 
+;	xStart : 18
+;	yStart : 10
+G90; Absolute Cordinates
+G1 X18 Y10 Z10 F5000 
+G1 Z0.9 F5000
+G91; Relative Cordinates
+G1 Y100 E-1.500000 F1500
+
+
+;Printing Capasitor (double Line no lift)
+;	xStart : 30
+;	yStart : 110
+G90; Absolute Cordinates
+G1 X30 Y110 Z10 F5000 
+G1 Z0.9 F5000
+G91; Relative Cordinates
+G1 Y6 E-0.090000 F1500
+G1 Y4 E-0.060000 F1500
+G1 X10 E-0.150000 F1500
+G1 Y0.1 E-0.001500 F1500
+G1 X-10 E-0.150000 F1500
+G1 Y4 E-0.060000 F1500
+G1 X10 E-0.150000 F1500
+G1 Y0.1 E-0.001500 F1500
+G1 X-10 E-0.150000 F1500
+G1 Y4 E-0.060000 F1500
+G1 X10 E-0.150000 F1500
+G1 Y0.1 E-0.001500 F1500
+G1 X-10 E-0.150000 F1500
+G1 Y4 E-0.060000 F1500
+G1 X10 E-0.150000 F1500
+G1 Y0.1 E-0.001500 F1500
+G1 X-10 E-0.150000 F1500
+G1 X-0.1 E-0.001500 F1500
+G1 Y-22.4 E-0.336000 F1500
+G90; Absolute Cordinates
+G1 X43 Y110 Z10 F5000 
+G1 Z0.9 F5000
+G91; Relative Cordinates
+G1 Y4.0 E-0.060000 F1500
+G1 Y4 E-0.060000 F1500
+G1 X-10 E-0.150000 F1500
+G1 Y0.1 E-0.001500 F1500
+G1 X10 E-0.150000 F1500
+G1 Y4 E-0.060000 F1500
+G1 X-10 E-0.150000 F1500
+G1 Y0.1 E-0.001500 F1500
+G1 X10 E-0.150000 F1500
+G1 Y4 E-0.060000 F1500
+G1 X-10 E-0.150000 F1500
+G1 Y0.1 E-0.001500 F1500
+G1 X10 E-0.150000 F1500
+G1 Y4 E-0.060000 F1500
+G1 X-10 E-0.150000 F1500
+G1 Y0.1 E-0.001500 F1500
+G1 X10 E-0.150000 F1500
+G1 Y-20.4 E-0.306000 F1500
+G1 Z10 F5000
+G90; Absolute Cordinates
+G1 X120 Y120 Z70 F5000 
+M84
+;END OF FILE

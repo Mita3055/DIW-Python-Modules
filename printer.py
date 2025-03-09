@@ -21,7 +21,7 @@ class Printer:
         self.line_gap = line_gap
 
 # Standard Capacitor Profile
-stdCap = Capacitor(
+LargeCap = Capacitor(
     stem_len=20,
     arm_len=20,
     arm_count=4,
@@ -30,38 +30,89 @@ stdCap = Capacitor(
     contact_patch_width = 5,
 )
 
-turrans_capasitors = Capacitor(
+stdCap = Capacitor(
     stem_len=10,
     arm_len=10,
     arm_count=4,
     gap=3,
     arm_gap=4,
+    contact_patch_width = 3,
+)
+
+electroCellCap = Capacitor(
+    stem_len=10,
+    arm_len=8,
+    arm_count=3,
+    gap=2,
+    arm_gap=2.5,
     contact_patch_width = 5,
 )
 
-
+smallCap = Capacitor(
+    stem_len=10,
+    arm_len=5,
+    arm_count=4,
+    gap=1,
+    arm_gap=2,
+    contact_patch_width = 5,
+)
 # PVA Print Profile
 pvaPrintProfile = Printer(
     extrusion=0.075,
-    retraction=0.01,
+    retraction=0.03,
     feed_rate= 950,
     movement_speed=5000,
-    print_height= 0.05,
-    bed_height= 0.05,
+    print_height= 1.9,
+    bed_height= 1.75,
     z_hop= 5,
     line_gap=.1,
 )
 
 # MXene Ink Print Profile
 MXeneInkPrintProfile = Printer(
-    extrusion=0.003,
-    retraction=0.001,
-    feed_rate=1550,
+    extrusion=0.02,
+    retraction=0.03,
+    feed_rate=1300,
     movement_speed=5000,
-    print_height= 1.1,
-    bed_height= .3,
+    print_height= 1.9,
+    bed_height= 1.75,
+    z_hop = 5,
+    line_gap=.3
+)
+
+# MXene Ink Print Profile
+MXeneProfile2_20 = Printer(
+    extrusion=0.01,
+    retraction=0.04,
+    feed_rate=1600,
+    movement_speed=5000,
+    print_height= 0.5,
+    bed_height= 0.5,
+    z_hop = 5,
+    line_gap=.4
+)
+
+MXeneProfile2_20_slide = Printer(
+    extrusion=0.008,
+    retraction=0.04,
+    feed_rate=1750,
+    movement_speed=6000,
+    print_height= 1.05,
+    bed_height= 0.95,
     z_hop = 5,
     line_gap=.1
+)
+
+# MXene Ink Print Profile
+MXeneProfile_pet_25G = Printer(
+    extrusion=0.02 ,
+    retraction=0.04,
+    feed_rate=1200,
+    movement_speed=5000,
+    print_height= 1.1,
+    bed_height= 1,
+    z_hop = 5,
+    line_gap=.6
 )
 
 def gcodeStart(cap, prnt, filename):
@@ -90,7 +141,7 @@ def gcodeStart(cap, prnt, filename):
         ";Start G-Code",
         "",
         "",
-        "BED_MESH_PROFILE LOAD=DIW", 
+        ";BED_MESH_PROFILE LOAD=default", 
         "G21 ; Set units to millimeters",
         "M104 S0",
         "M140 S0",
@@ -124,8 +175,12 @@ def printY(y_move, prnt):
     output = [f"G1 Y{y_move} E{-prnt.extrusion*abs(y_move):f} F{prnt.feed_rate}"]
     return output
 
-def moveX(x_move, prnt, lift):
-    output = [f"G1 X{x_move} F{prnt.feed_rate}"]
+def moveX(x_move, prnt):
+    output = [f"G1 X{x_move} F{prnt.movement_speed}"]
+    return output
+
+def moveY(y_move, prnt):
+    output = [f"G1 Y{y_move} F{prnt.movement_speed}"]
     return output
 
 def moveZ(z_move, prnt):
@@ -250,6 +305,146 @@ def printCap(cap, prnt, xStart, yStart):
 
     return output
 
+
+
+def printCap_contactPatch(cap, prnt, xStart, yStart):
+    output = ["",
+              "",
+              ";Printing Capasitor (double Line w/ contact patch)",
+              f";\txStart : {xStart}",
+              f";\tyStart : {yStart}"]
+    #Moving to Start 
+    output.extend(absolute())
+    output.extend(movePrintHead(xStart-5, yStart, 10, prnt))
+    output.extend(moveZ(prnt.print_height, prnt))
+    output.extend(relative())
+    #Left Side
+    output.extend(printY(5, prnt))
+
+    output.extend(printX(-cap.contact_patch_width/2, prnt))
+    output.extend(printY(cap.contact_patch_width, prnt))
+    output.extend(printX(cap.contact_patch_width, prnt))
+    output.extend(printY(-cap.contact_patch_width, prnt))
+    output.extend(printX(-cap.contact_patch_width/2, prnt))
+
+
+    output.extend(printY(cap.stem_len-cap.arm_gap, prnt)) #Stem
+
+    for arm in range (0, cap.arm_count, 1):  # arms
+        output.extend(printY(cap.arm_gap, prnt))
+        output.extend(printX(cap.arm_len, prnt))
+        output.extend(printY(prnt.line_gap, prnt))
+        output.extend(printX(-cap.arm_len, prnt))
+
+    output.extend(printX(-prnt.line_gap, prnt))
+    downTravel = cap.stem_len + (cap.arm_count*(prnt.line_gap))+(cap.arm_count-1)*(cap.arm_gap)
+    output.extend(printY(-downTravel, prnt))
+
+    moveZ(prnt.z_hop,prnt)
+
+    #Moving to new Start
+
+    output.extend(absolute())
+    output.extend(movePrintHead(xStart + cap.arm_len + cap.gap, yStart, 10, prnt))
+    output.extend(moveZ(prnt.print_height, prnt))
+    output.extend(relative())
+    output.extend(printY(cap.stem_len-(3*cap.arm_gap/2),prnt))
+    for arm in range (0, cap.arm_count, 1):
+        output.extend(printY(cap.arm_gap, prnt))
+        output.extend(printX(-cap.arm_len, prnt))
+        output.extend(printY(prnt.line_gap, prnt))
+        output.extend(printX(cap.arm_len, prnt))
+
+    downTravel = cap.stem_len + cap.arm_count*prnt.line_gap + (cap.arm_count-1)*cap.arm_gap - cap.arm_gap/2
+    output.extend(printY(-downTravel, prnt))
+
+    output.extend(moveZ(10, prnt))
+
+
+    return output
+
+def printCap_doubleWall_contactPatch(cap, prnt, xStart, yStart):
+    output = ["",
+              "",
+              ";Printing Capasitor (double Line w/ contact patch)",
+              f";\txStart : {xStart}",
+              f";\tyStart : {yStart}"]
+    #Moving to Start 
+    output.extend(absolute())
+    output.extend(movePrintHead(xStart-5, yStart, 10, prnt))
+    output.extend(moveZ(prnt.print_height, prnt))
+    output.extend(relative())
+    #Left Side
+    output.extend(printY(5, prnt))
+
+    output.extend(printX(-cap.contact_patch_width/2, prnt))
+    output.extend(printY(cap.contact_patch_width, prnt))
+    output.extend(printX(cap.contact_patch_width, prnt))
+    output.extend(printY(-cap.contact_patch_width, prnt))
+    output.extend(printX(-cap.contact_patch_width/2, prnt))
+
+
+    output.extend(printY(cap.stem_len-cap.arm_gap, prnt)) #Stem
+
+    for arm in range (0, cap.arm_count, 1):  # arms
+        output.extend(printY(cap.arm_gap, prnt))
+        output.extend(printX(cap.arm_len, prnt))
+        output.extend(printY(prnt.line_gap, prnt))
+        output.extend(printX(-cap.arm_len, prnt))
+
+    output.extend(printX(-prnt.line_gap, prnt))
+    downTravel = cap.stem_len + (cap.arm_count*(prnt.line_gap))+(cap.arm_count-1)*(cap.arm_gap)
+    output.extend(printY(-downTravel, prnt))
+
+    output.extend(printX(-prnt.line_gap, prnt))
+    output.extend(printY(downTravel+prnt.line_gap, prnt))
+    output.extend(printX(3*prnt.line_gap, prnt))
+
+
+    for arm in range (0, cap.arm_count, 1):  # arms
+        output.extend(printX(cap.arm_len, prnt))
+        output.extend(printX(prnt.line_gap, prnt))
+        output.extend(printY(-3*prnt.line_gap, prnt))
+        output.extend(printX(-cap.arm_len, prnt))
+        output.extend(printY(cap.arm_gap-prnt.line_gap, prnt))
+
+    output.extend(printY(-cap.stem_len+prnt.line_gap, prnt))
+    output.extend(moveZ(prnt.z_hop,prnt))
+
+    #Moving to new Start
+
+    output.extend(absolute())
+    output.extend(movePrintHead(xStart + cap.arm_len + cap.gap, yStart, 10, prnt))
+    output.extend(moveZ(prnt.print_height, prnt))
+    output.extend(relative())
+    output.extend(printY(cap.stem_len-(3*cap.arm_gap/2),prnt))
+
+    for arm in range (0, cap.arm_count, 1):
+        output.extend(printY(cap.arm_gap, prnt))
+        output.extend(printX(-cap.arm_len, prnt))
+        output.extend(printY(prnt.line_gap, prnt))
+        output.extend(printX(cap.arm_len, prnt))
+
+    downTravel = cap.stem_len + cap.arm_count*prnt.line_gap + (cap.arm_count-1)*cap.arm_gap - cap.arm_gap/2
+    output.extend(printY(-downTravel, prnt))
+
+    output.extend(printX(prnt.line_gap, prnt))
+    output.extend(printY(downTravel+prnt.line_gap, prnt))
+    output.extend(printX(-3*prnt.line_gap, prnt))
+
+
+    for arm in range (0, cap.arm_count, 1):  # arms
+        output.extend(printX(-cap.arm_len, prnt))
+        output.extend(printX(-prnt.line_gap, prnt))
+        output.extend(printY(-3*prnt.line_gap, prnt))
+        output.extend(printX(-cap.arm_len, prnt))
+        output.extend(printY(cap.arm_gap-prnt.line_gap, prnt))
+
+    output.extend(printY(-cap.stem_len+prnt.line_gap, prnt))
+
+    
+
+    return output
 
 def printPrimeLine(xStart, yStart, len, prnt):
     output = ["",
@@ -411,7 +606,12 @@ def singleLineCap_left(cap, prnt, layers, layer_height, delay, xStart, yStart):
               "",
               ";Printing Capasitor (single Line - left)",
               f";\txStart : {xStart}",
-              f";\tyStart : {yStart}"]
+              f";\tyStart : {yStart}",
+              f";\tLayers: {layers}",
+              f";\tLayer Height: {layer_height}",
+              f";\tDelay: {delay}",
+              f";\tPrinter: {prnt}",
+              f";\tExtrusion Rate: {prnt.extrusion}"]
     
     #Moving to Start 
     output.extend(absolute())
@@ -427,7 +627,7 @@ def singleLineCap_left(cap, prnt, layers, layer_height, delay, xStart, yStart):
         output.extend(retract(prnt))
         output.extend(moveZ(2, prnt))
         output.extend(movePrintHead(-cap.arm_len, -cap.arm_gap, -2, prnt))
-
+    output.extend(retract(prnt))
     output.extend(moveZ(10, prnt))
 
     if layers == 1:
@@ -455,7 +655,12 @@ def singleLineCap_right(cap, prnt, layers, layer_height, delay, xStart, yStart):
               "",
               ";Printing Capasitor (single Line - right)",
               f";\txStart : {xStart}",
-              f";\tyStart : {yStart}"]
+              f";\tyStart : {yStart}",
+              f";\tLayers: {layers}",
+              f";\tLayer Height: {layer_height}",
+              f";\tDelay: {delay}",
+              f";\tPrinter: {prnt}",
+              f";\tExtrusion Rate: {prnt.extrusion}"]
     
     #Moving to Start 
     output.extend(absolute())
@@ -526,7 +731,8 @@ def contracting_square_wave(start_x, start_y, height, width, iterations, shrink_
                 f";\tshrink_rate : {shrink_rate}"]
 
     output.extend(absolute())
-    output.extend(movePrintHead(start_x, start_y, prnt.print_height, prnt))
+    output.extend(movePrintHead(start_x, start_y, 10, prnt))
+    output.extend(moveZ(prnt.print_height, prnt))
     output.extend(relative())
 
     current_width = width
@@ -544,30 +750,107 @@ def contracting_square_wave(start_x, start_y, height, width, iterations, shrink_
     return output
 
 
-def lattice(horizontal_lines, vertical_lines, vertical_spacing, horizontal_spacing, start_x, start_y, prnt):
+def lattice(start_x, start_y, rows, cols, spacing, prnt):
     output = ["",
                 "",
                 ";Printing Lattice/Grid",
                 f";\tstart_x : {start_x}",
                 f";\tstart_y : {start_y}",
-                f";\thorizontal_lines : {horizontal_lines}",
-                f";\tvertical_lines : {vertical_lines}",
-                f";\tvertical_spacing : {vertical_spacing}",
-                f";\thorizontal_spacing : {horizontal_spacing}"]
+                f";\thorizontal_lines : {cols}",
+                f";\tvertical_lines : {rows}",
+                f";\spacing : {spacing}"]
 
     output.extend(absolute())
-    output.extend(movePrintHead(start_x, start_y, prnt.print_height, prnt))
+    output.extend(movePrintHead(start_x, start_y-spacing, 10, prnt))
+    output.extend(moveZ(prnt.print_height, prnt))
     output.extend(relative())
 
-    # Print horizontal lines
-    for i in range(horizontal_lines):
-        output.extend(printX(vertical_lines * horizontal_spacing, prnt))
-        output.extend(movePrintHead(start_x, start_y + (i + 1) * vertical_spacing, prnt.print_height, prnt))
+    output.extend(printY(10,prnt))
+    # Vertical Sections:
+    for i in range(rows):
+        if i % 2 == 0:
+            output.extend(printY(spacing * cols, prnt))
+        else:
+            output.extend(printY(-spacing * cols, prnt))
+        output.extend(printX(spacing, prnt))
 
-    # Print vertical lines
-    for j in range(vertical_lines):
-        output.extend(printY(horizontal_lines * vertical_spacing, prnt))
-        output.extend(movePrintHead(start_x + (j + 1) * horizontal_spacing, start_y, prnt.print_height, prnt))
+    if rows % 2 == 0:
+        output.extend(printY(spacing * cols, prnt))
 
+        for i in range(cols):
+            if i % 2 == 0:
+                output.extend(printX(-spacing * rows, prnt))
+                output.extend(printY(-spacing, prnt))
+            else:
+                output.extend(printX(spacing * rows, prnt))
+                output.extend(printY(-spacing, prnt))
+        output.extend(printX(-spacing-spacing*cols, prnt))
+
+    else:
+        output.extend(printY(-spacing * cols, prnt))
+
+        for i in range(cols):
+            if i % 2 == 0:
+                output.extend(printX(-spacing * rows, prnt))
+                output.extend(printY(spacing, prnt))
+            else:
+                output.extend(printX(spacing * rows, prnt))
+                output.extend(printY(spacing, prnt))
+
+        output.extend(printX(spacing+cols*spacing, prnt))
+
+    return output
+
+def endline_experiment_retraction(prnt, xStart, yStart, length, spacing, iterations, stop_dist, rate):
+    output = ["",
+                "",
+                ";Printing Endline Experiment",
+                f";\txStart : {xStart}",
+                f";\tyStart : {yStart}",
+                f";\tlength : {length}",
+                f";\tspacing : {spacing}",
+                f";\titerations : {iterations}"]
+
+    output.extend(absolute())
+    output.extend(movePrintHead(xStart, yStart, 10, prnt))
+
+    for i in range(iterations):
+        output.extend(moveZ(prnt.print_height, prnt))
+        output.extend(relative())
+        output.extend(printY(length-stop_dist, prnt))
+        prnt.movemnet_speed = prnt.feed_rate
+        output.extend(moveY(stop_dist, prnt))
+        output.extend(retract(prnt))
+        prnt.retraction = rate*prnt.retraction
+        output.extend(moveZ(10, prnt))
+        output.extend(absolute())
+        output.extend(movePrintHead(xStart+(spacing*(i+1)), yStart, 10, prnt))
+    
+    return output
+
+
+def endline_experiment_stopdist(prnt, xStart, yStart, length, spacing, iterations, stop_dist, rate):
+    output = ["",
+                "",
+                ";Printing Endline Experiment",
+                f";\txStart : {xStart}",
+                f";\tyStart : {yStart}",
+                f";\tlength : {length}",
+                f";\tspacing : {spacing}",
+                f";\titerations : {iterations}"]
+
+    output.extend(absolute())
+    output.extend(movePrintHead(xStart, yStart, 10, prnt))
+
+    for i in range(iterations):
+        output.extend(moveZ(prnt.print_height, prnt))
+        output.extend(relative())
+        output.extend(printY(length-stop_dist, prnt))
+        output.extend(moveY(stop_dist, prnt))
+        stop_dist=rate*stop_dist
+        output.extend(retract(prnt))
+        output.extend(moveZ(10, prnt))
+        output.extend(absolute())
+        output.extend(movePrintHead(xStart+(spacing*(i+1)), yStart, 10, prnt))
     output.extend(moveZ(10, prnt))
     return output
