@@ -1,0 +1,254 @@
+; Beidaghi Lab - Capacitor File : <function fileName at 0x7fff51960fe0>
+; Printer Profile: pvaPrintProfile
+	;Extrusion: 0.075
+	;Feed Rate: 950
+	;Movement Speed: 5000
+	;Print Height: 0.05
+	;Bed Height: 0.05
+	;Line Gap: 0.1
+; Capacitor Profile: stdCap
+	;Stem Length: 20
+	;Arm Length: 20
+	;Arm Count: 4
+	;Gap: 6
+	;Arm Gap: 6
+	;Contact Patch Width: 5
+;Start G-Code
+
+
+BED_MESH_PROFILE LOAD=DIW
+G21 ; Set units to millimeters
+M104 S0
+M140 S0
+G28; Homing Printer
+G90;
+G92 E0 ; Reset extruder position
+
+
+;Printing Priming Line 
+;	xStart : 10
+;	yStart : 10
+G90; Absolute Cordinates
+G1 X10 Y10 Z10 F5000 
+G1 Z0.05 F5000
+G91; Relative Cordinates
+G1 Y100 E-7.500000 F950
+
+
+;Printing Capasitor (single Line - left)
+;	xStart : 30
+;	yStart : 10
+G90; Absolute Cordinates
+G1 X30 Y10 Z10 F5000 
+G1 Z0.05 F5000
+G91; Relative Cordinates
+G1 Y38 E-2.850000 F950
+G1 X20 E-1.500000 F950
+G1 E0.005
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 X20 E-1.500000 F950
+G1 E0.005
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 X20 E-1.500000 F950
+G1 E0.005
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 X20 E-1.500000 F950
+G1 E0.005
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 Z10 F5000
+
+
+;Printing Capasitor (single Line - right)
+;	xStart : 30
+;	yStart : 10
+G90; Absolute Cordinates
+G1 X56 Y10 Z10 F5000 
+G1 Z0.05 F5000
+G91; Relative Cordinates
+G1 Y41.0 E-3.075000 F950
+G1 X-20 E-1.500000 F950
+G1 E0.005
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 X-20 E-1.500000 F950
+G1 E0.005
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 X-20 E-1.500000 F950
+G1 E0.005
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 X-20 E-1.500000 F950
+G1 E0.005
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 Z10 F5000
+
+
+;Printing Capasitor (single Line - left)
+;	xStart : 60
+;	yStart : 10
+G90; Absolute Cordinates
+G1 X60 Y10 Z10 F5000 
+G1 Z0.05 F5000
+G91; Relative Cordinates
+G1 Y38 E-2.850000 F1100
+G1 X20 E-1.500000 F1100
+G1 E0.01
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 X20 E-1.500000 F1100
+G1 E0.01
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 X20 E-1.500000 F1100
+G1 E0.01
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 X20 E-1.500000 F1100
+G1 E0.01
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 Z10 F5000
+
+
+;Printing Capasitor (single Line - right)
+;	xStart : 60
+;	yStart : 10
+G90; Absolute Cordinates
+G1 X86 Y10 Z10 F5000 
+G1 Z0.05 F5000
+G91; Relative Cordinates
+G1 Y41.0 E-3.075000 F1100
+G1 X-20 E-1.500000 F1100
+G1 E0.01
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 X-20 E-1.500000 F1100
+G1 E0.01
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 X-20 E-1.500000 F1100
+G1 E0.01
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 X-20 E-1.500000 F1100
+G1 E0.01
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 Z10 F5000
+
+
+;Printing Capasitor (single Line - left)
+;	xStart : 30
+;	yStart : 75
+G90; Absolute Cordinates
+G1 X30 Y75 Z10 F5000 
+G1 Z0.05 F5000
+G91; Relative Cordinates
+G1 Y38 E-1.900000 F950
+G1 X20 E-1.000000 F950
+G1 E0.015
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 X20 E-1.000000 F950
+G1 E0.015
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 X20 E-1.000000 F950
+G1 E0.015
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 X20 E-1.000000 F950
+G1 E0.015
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 Z10 F5000
+
+
+;Printing Capasitor (single Line - right)
+;	xStart : 30
+;	yStart : 75
+G90; Absolute Cordinates
+G1 X56 Y75 Z10 F5000 
+G1 Z0.05 F5000
+G91; Relative Cordinates
+G1 Y41.0 E-2.050000 F950
+G1 X-20 E-1.000000 F950
+G1 E0.015
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 X-20 E-1.000000 F950
+G1 E0.015
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 X-20 E-1.000000 F950
+G1 E0.015
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 X-20 E-1.000000 F950
+G1 E0.015
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 Z10 F5000
+
+
+;Printing Capasitor (single Line - left)
+;	xStart : 60
+;	yStart : 75
+G90; Absolute Cordinates
+G1 X60 Y75 Z10 F5000 
+G1 Z0.05 F5000
+G91; Relative Cordinates
+G1 Y38 E-1.900000 F1100
+G1 X20 E-1.000000 F1100
+G1 E0.02
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 X20 E-1.000000 F1100
+G1 E0.02
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 X20 E-1.000000 F1100
+G1 E0.02
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 X20 E-1.000000 F1100
+G1 E0.02
+G1 Z2 F5000
+G1 X-20 Y-6 Z-2 F5000 
+G1 Z10 F5000
+
+
+;Printing Capasitor (single Line - right)
+;	xStart : 60
+;	yStart : 75
+G90; Absolute Cordinates
+G1 X86 Y75 Z10 F5000 
+G1 Z0.05 F5000
+G91; Relative Cordinates
+G1 Y41.0 E-2.050000 F1100
+G1 X-20 E-1.000000 F1100
+G1 E0.02
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 X-20 E-1.000000 F1100
+G1 E0.02
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 X-20 E-1.000000 F1100
+G1 E0.02
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 X-20 E-1.000000 F1100
+G1 E0.02
+G1 Z2 F5000
+G1 X20 Y-6 Z-2 F5000 
+G1 Z10 F5000
+G90; Absolute Cordinates
+G1 X120 Y120 Z70 F5000 
+M84

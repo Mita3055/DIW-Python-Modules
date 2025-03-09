@@ -22,6 +22,15 @@ class Printer:
 
 # Standard Capacitor Profile
 stdCap = Capacitor(
+    stem_len=20,
+    arm_len=20,
+    arm_count=4,
+    gap=6,
+    arm_gap=6,
+    contact_patch_width = 5,
+)
+
+turrans_capasitors = Capacitor(
     stem_len=10,
     arm_len=10,
     arm_count=4,
@@ -30,14 +39,15 @@ stdCap = Capacitor(
     contact_patch_width = 5,
 )
 
+
 # PVA Print Profile
 pvaPrintProfile = Printer(
-    extrusion=0.15,
-    retraction=0.1,
-    feed_rate=450,
-    movement_speed=2000,
-    print_height= .3,
-    bed_height= .3,
+    extrusion=0.075,
+    retraction=0.01,
+    feed_rate= 950,
+    movement_speed=5000,
+    print_height= 0.05,
+    bed_height= 0.05,
     z_hop= 5,
     line_gap=.1,
 )
@@ -45,7 +55,7 @@ pvaPrintProfile = Printer(
 # MXene Ink Print Profile
 MXeneInkPrintProfile = Printer(
     extrusion=0.003,
-    retraction=0.01,
+    retraction=0.001,
     feed_rate=1550,
     movement_speed=5000,
     print_height= 1.1,
@@ -80,7 +90,7 @@ def gcodeStart(cap, prnt, filename):
         ";Start G-Code",
         "",
         "",
-        "BED_MESH_PROFILE LOAD=default",
+        "BED_MESH_PROFILE LOAD=DIW", 
         "G21 ; Set units to millimeters",
         "M104 S0",
         "M140 S0",
@@ -99,18 +109,19 @@ def fileName(cap, prnt):
     return filename
 
 def movePrintHead(x_move, y_move, z_move, prnt):
-    output = [f"G1 X{x_move} Y{y_move} Z{z_move} F{prnt.movement_speed}"]
+    output = [f"G1 X{x_move} Y{y_move} Z{z_move} F{prnt.movement_speed} "]
     return output
 
 def retract(prnt):
-    output = [f"G1 E-{prnt.retraction}"]
+    output = [f"G1 E{prnt.retraction}"]
+    return output
 
 def printX(x_move, prnt):
-    output = [f"G1 X{x_move} E{(prnt.extrusion*abs(x_move)):f} F{prnt.feed_rate}"]
+    output = [f"G1 X{x_move} E{-prnt.extrusion*abs(x_move):f} F{prnt.feed_rate}"]
     return output
 
 def printY(y_move, prnt):
-    output = [f"G1 Y{y_move} E{(prnt.extrusion*abs(y_move)):f} F{prnt.feed_rate}"]
+    output = [f"G1 Y{y_move} E{-prnt.extrusion*abs(y_move):f} F{prnt.feed_rate}"]
     return output
 
 def moveX(x_move, prnt, lift):
@@ -135,6 +146,11 @@ def home():
 def pause(delay):
     output = [f"G4 S{delay}"]
     return output
+
+def motorOff():
+    output = ["M84"]
+    return output
+
 
 
 def print_circle(radius, x_center, y_center, segments, prnt):
@@ -408,6 +424,7 @@ def singleLineCap_left(cap, prnt, layers, layer_height, delay, xStart, yStart):
 
     for arm in range (0, cap.arm_count, 1):
         output.extend(printX(cap.arm_len, prnt))
+        output.extend(retract(prnt))
         output.extend(moveZ(2, prnt))
         output.extend(movePrintHead(-cap.arm_len, -cap.arm_gap, -2, prnt))
 
@@ -426,69 +443,31 @@ def singleLineCap_left(cap, prnt, layers, layer_height, delay, xStart, yStart):
 
             for arm in range (0, cap.arm_count, 1):
                 output.extend(printX(cap.arm_len, prnt))
+                output.extend(retract(prnt))
                 output.extend(moveZ(2, prnt))
                 output.extend(movePrintHead(-cap.arm_len, -cap.arm_gap, -2, prnt))    
         
         output.extend(moveZ(10, prnt))
         return output
-
-def singleLineCap_left_absolute(cap, prnt, layers, layer_height, delay, xStart, yStart):
-    output = ["",
-                "",
-                ";Printing Capacitor (single Line - left, absolute)",
-                f";\txStart : {xStart}",
-                f";\tyStart : {yStart}"]
-
-    # Moving to Start
-    output.extend(absolute())
-    output.extend(movePrintHead(xStart, yStart, 10, prnt))
-    output.extend(moveZ(prnt.print_height, prnt))
-
-    # Left Side
-    output.extend(printY(cap.stem_len + (cap.arm_count - 1) * cap.arm_gap, prnt))
-
-    for arm in range(cap.arm_count):
-        output.extend(printX(cap.arm_len, prnt))
-        output.extend(moveZ(2, prnt))
-        output.extend(movePrintHead(xStart, yStart + cap.stem_len + (arm + 1) * cap.arm_gap, prnt.print_height, prnt))
-
-    output.extend(moveZ(10, prnt))
-
-    if layers == 1:
-        return output
-    else:
-        for layer in range(1, layers):
-            output.extend(pause(delay))
-            output.extend(absolute())
-            output.extend(movePrintHead(xStart, yStart + cap.stem_len + (cap.arm_count - 1) * cap.arm_gap, 10, prnt))
-            output.extend(moveZ(prnt.print_height + layer_height * (layer + 1), prnt))
-
-            for arm in range(cap.arm_count):
-                output.extend(printX(cap.arm_len, prnt))
-                output.extend(moveZ(2, prnt))
-                output.extend(movePrintHead(xStart, yStart + cap.stem_len + (arm + 1) * cap.arm_gap, prnt.print_height, prnt))
-
-        output.extend(moveZ(10, prnt))
-        return output
-
+    
 def singleLineCap_right(cap, prnt, layers, layer_height, delay, xStart, yStart):
     output = ["",
               "",
-              ";Printing Capacitor (single Line - right)",
+              ";Printing Capasitor (single Line - right)",
               f";\txStart : {xStart}",
               f";\tyStart : {yStart}"]
     
-    # Moving to Start 
+    #Moving to Start 
     output.extend(absolute())
-    output.extend(movePrintHead(xStart + cap.arm_len + cap.gap, yStart, 10, prnt))
+    output.extend(movePrintHead(xStart + cap.arm_len + cap.arm_gap, yStart, 10, prnt))
     output.extend(moveZ(prnt.print_height, prnt))
     output.extend(relative())
 
-    # Right Side
-    output.extend(printY(cap.stem_len + (cap.arm_count-1/2)*cap.arm_gap, prnt)) #stem
+    output.extend(printY(cap.stem_len + (cap.arm_count-1/2)*cap.arm_gap, prnt))
 
-    for arm in range(cap.arm_count): # arms
+    for arm in range (0, cap.arm_count, 1):
         output.extend(printX(-cap.arm_len, prnt))
+        output.extend(retract(prnt))
         output.extend(moveZ(2, prnt))
         output.extend(movePrintHead(cap.arm_len, -cap.arm_gap, -2, prnt))
 
@@ -498,20 +477,20 @@ def singleLineCap_right(cap, prnt, layers, layer_height, delay, xStart, yStart):
         return output
     
     else:
-        for layer in range(1, layers):
+        for layer in range(1, layers, 1):
             output.extend(pause(delay))
             output.extend(absolute())    
-            output.extend(movePrintHead(xStart + cap.arm_len + cap.gap, yStart + cap.stem_len + (cap.arm_count-1/2)*cap.arm_gap, 10, prnt))
+            output.extend(movePrintHead(xStart + cap.arm_len + cap.arm_gap, yStart + cap.stem_len + (cap.arm_count-1/2)*cap.arm_gap, 10, prnt))
             output.extend(moveZ(prnt.print_height + layer_height * (layer + 1), prnt))
             output.extend(relative())
 
-            for arm in range(cap.arm_count):
+            for arm in range (0, cap.arm_count, 1):
                 output.extend(printX(-cap.arm_len, prnt))
+                output.extend(retract(prnt))
                 output.extend(moveZ(2, prnt))
                 output.extend(movePrintHead(cap.arm_len, -cap.arm_gap, -2, prnt))
         return output
     
-
 def square_wave(start_x, start_y, height, width, iterations, prnt):
     output = ["",
                 "",
